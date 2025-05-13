@@ -1,0 +1,11 @@
+notebook
+librosa
+matplotlib
+numpy
+pandas
+scipy
+tqdm
+datasets
+ipywidgets
+torch
+torchaudio
