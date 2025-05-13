@@ -7,3 +7,5 @@ scipy
 tqdm
 datasets
 ipywidgets
+torch
+torchaudio

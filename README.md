@@ -7,3 +7,8 @@ mlx7-week5-audio-transformer/
 ├── urban-sounds-classification/ # Task 1: urban sound classification
 ├── whisper-speech-to-text/ # Task 2: fine tune Whisper and build a speech-controlled 'assistant'
 └── requirements.txt # dependencies
+
+## Task 1: Urban Sound Classification
+
+Spectrograms on 10 examples from the UrbanSound8K dataset:
+![Spectrograms of 10 audio files](./urban-sounds-classification/notebooks/spectrograms.png)
