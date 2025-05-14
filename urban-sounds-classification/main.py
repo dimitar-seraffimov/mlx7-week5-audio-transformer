@@ -1,5 +1,5 @@
 import os
-from data.get_dataset import get_dataset
+from data.get_dataset import download_and_prepare_dataset
 from train.train import train_model
 from train.evaluate import evaluate_all_folds
 
