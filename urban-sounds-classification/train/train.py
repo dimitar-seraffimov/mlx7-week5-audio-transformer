@@ -34,21 +34,6 @@ os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
 #
 #
-# helper fun to ensure class_to_idx mapping is loaded
-#
-#
-
-def ensure_class_to_idx(csv_path):
-  mapping_path = os.path.join('checkpoints', 'class_to_idx.json')
-  if not os.path.exists(mapping_path):
-    # build
-    metadata = pd.read_csv(csv_path)
-    all_classes = sorted(metadata['class'].unique())
-    class_to_idx = {label: idx for idx, label in enumerate(all_classes)}
-    with open(mapping_path, 'w') as f:
-        json.dump(class_to_idx, f)
-#
-#
 # TRAINING 
 #
 #
@@ -56,7 +41,6 @@ def ensure_class_to_idx(csv_path):
 def train_model(CSV_PATH, AUDIO_DIR):
   timestamp = datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
   # load class_to_idx mapping
-  ensure_class_to_idx(CSV_PATH)
   with open('checkpoints/class_to_idx.json', 'r') as f:
     class_to_idx = json.load(f)
 
