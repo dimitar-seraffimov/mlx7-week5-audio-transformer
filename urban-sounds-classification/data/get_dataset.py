@@ -8,7 +8,7 @@ def download_and_prepare_dataset(base_dir="urbansound8k"):
     dataset = soundata.initialize('urbansound8k')
     dataset.download()
 
-    real_audio_dir = os.path.join(dataset.dataset_path, "audio")  # the audio location
+    real_audio_dir = os.path.join(dataset.default_path, "audio")  # the audio location
     csv_path = os.path.join(base_dir, "UrbanSound8K.csv")
 
     # build the CSV metadata
@@ -24,5 +24,7 @@ def download_and_prepare_dataset(base_dir="urbansound8k"):
     os.makedirs(base_dir, exist_ok=True)
     metadata_df = pd.DataFrame(metadata)
     metadata_df.to_csv(csv_path, index=False)
+
+    print(f"Saved CSV metadata to {csv_path}")
 
     return csv_path, real_audio_dir
