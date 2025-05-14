@@ -31,10 +31,6 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 CHECKPOINT_DIR = "checkpoints"
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
-# load class_to_idx mapping
-with open('checkpoints/class_to_idx.json', 'r') as f:
-  class_to_idx = json.load(f)
-
 #
 #
 # TRAINING 
@@ -67,6 +63,11 @@ def train_model(CSV_PATH, AUDIO_DIR):
     preprocessor = AudioPreprocessor(num_patches=16)
     train_dataset = UrbanSoundDataset(CSV_PATH, AUDIO_DIR, fold=fold, transform=preprocessor)
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
+
+    
+    # load class_to_idx mapping
+    with open('checkpoints/class_to_idx.json', 'r') as f:
+      class_to_idx = json.load(f)
 
     # model
     model = UrbanSoundModel(num_layers=6, embedding_dim=64, hidden_dim=128, num_heads=4, num_patches=16, num_classes=NUM_CLASSES)
