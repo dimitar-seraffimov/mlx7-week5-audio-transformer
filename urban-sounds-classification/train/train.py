@@ -126,7 +126,7 @@ def train_model(CSV_PATH, AUDIO_DIR):
 
     # save model checkpoint to wandb artifact
     #model_save_path = os.path.join(CHECKPOINT_DIR, f"model_fold_{fold}_{timestamp}.pth")
-    model_save_path = os.path.join(CHECKPOINT_DIR, f"saved_model.pth")
+    model_save_path = os.path.join(CHECKPOINT_DIR, f"model_fold_{fold}.pth")
     torch.save(model.state_dict(), model_save_path)
 
     # save model checkpoint to wandb artifact

@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import json
 from sklearn.metrics import accuracy_score, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -18,15 +19,16 @@ BASE_DIR = "urbansound8k"
 CSV_PATH = os.path.join(BASE_DIR, "UrbanSound8K.csv")
 AUDIO_DIR = os.path.join(BASE_DIR, "audio")
 CHECKPOINT_DIR = "checkpoints"
+CLASS_MAP_PATH = os.path.join(CHECKPOINT_DIR, "class_to_idx.json")
 
-def evaluate_fold(fold_to_evaluate, timestamp):
+def evaluate_fold(fold_to_evaluate):
   preprocessor = AudioPreprocessor(num_patches=16)
 
   dataset = UrbanSoundDataset(CSV_PATH, AUDIO_DIR, fold=fold_to_evaluate, transform=preprocessor)
   dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False)
 
   model = UrbanSoundModel(num_layers=6, embed_dim=64, hidden_dim=128, num_heads=4, num_patches=16, num_classes=NUM_CLASSES)
-  checkpoint_path = os.path.join(CHECKPOINT_DIR, f"saved_model.pth")
+  checkpoint_path = os.path.join(CHECKPOINT_DIR, f"model_fold_{fold_to_evaluate}.pth")
   model.load_state_dict(torch.load(checkpoint_path))
   model = model.to(DEVICE)
   model.eval()
@@ -44,13 +46,19 @@ def evaluate_fold(fold_to_evaluate, timestamp):
 
   accuracy = accuracy_score(all_labels, all_preds)
   print(f"Evaluation Accuracy on Fold {fold_to_evaluate}: {accuracy:.4f}")
+  # Load class mapping
+  with open(CLASS_MAP_PATH, "r") as f:
+      class_to_idx = json.load(f)
+  idx_to_class = {v: k for k, v in class_to_idx.items()}
 
   cm = confusion_matrix(all_labels, all_preds)
   print("Confusion Matrix:")
   print(cm)
 
-  fig, ax = plt.subplots(figsize=(8, 6))
-  sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+  class_labels = [idx_to_class[i] for i in range(len(idx_to_class))]
+
+  fig, ax = plt.subplots(figsize=(10, 8))
+  sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels, ax=ax)  
   ax.set_xlabel('Predicted Labels')
   ax.set_ylabel('True Labels')
   ax.set_title(f'Confusion Matrix for Fold {fold_to_evaluate}')
