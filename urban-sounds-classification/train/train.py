@@ -37,7 +37,7 @@ os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 #
 #
 
-def train_model(csv_path, audio_dir):
+def train_model(CSV_PATH, AUDIO_DIR):
   timestamp = datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
   wandb.init(
   project='mlx7-week5-sounds-classification', 
@@ -60,7 +60,7 @@ def train_model(csv_path, audio_dir):
     
     # dataset and dataloader
     preprocessor = AudioPreprocessor(num_patches=16)
-    train_dataset = UrbanSoundDataset(csv_path, audio_dir, fold=fold, transform=preprocessor)
+    train_dataset = UrbanSoundDataset(CSV_PATH, AUDIO_DIR, fold=fold, transform=preprocessor)
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # model
@@ -120,7 +120,8 @@ def train_model(csv_path, audio_dir):
     all_fold_accuracies.append(fold_accuracy)
 
     # save model checkpoint to wandb artifact
-    model_save_path = os.path.join(CHECKPOINT_DIR, f"model_fold_{fold}_{timestamp}.pth")
+    #model_save_path = os.path.join(CHECKPOINT_DIR, f"model_fold_{fold}_{timestamp}.pth")
+    model_save_path = os.path.join(CHECKPOINT_DIR, f"saved_model.pth")
     torch.save(model.state_dict(), model_save_path)
 
     # save model checkpoint to wandb artifact
