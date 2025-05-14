@@ -29,9 +29,9 @@ def download_and_prepare_dataset(base_dir="urbansound8k"):
         metadata.append({
             "slice_file_name": os.path.basename(clip.audio_path),
             "fold": clip.fold,
-            "classID": clip.label_id,
-            "class": clip.label
+            "class": clip.tags[0]['label']
         })
+
 
     metadata_df = pd.DataFrame(metadata)
     metadata_df.to_csv(csv_path, index=False)
