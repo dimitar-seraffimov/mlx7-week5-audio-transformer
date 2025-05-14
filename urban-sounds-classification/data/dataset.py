@@ -3,7 +3,7 @@ import pandas as pd
 import torchaudio
 from torch.utils.data import Dataset
 # imported here because we provide an instance of it when creating the dataset
-from preprocess_audio import AudioPreprocessor # never called here, only used in __getitem__
+from data.preprocess_audio import AudioPreprocessor # never called here, only used in __getitem__
 
 class UrbanSoundDataset(Dataset):
   def __init__(self, csv_path, audio_dir, fold, transform=None):

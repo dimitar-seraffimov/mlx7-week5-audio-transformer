@@ -9,8 +9,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 import datetime
-from huggingface_hub import hf_hub_download
+import soundata
 from torch.utils.data import DataLoader
+from datasets import load_dataset
 from data.dataset import UrbanSoundDataset
 from data.preprocess_audio import AudioPreprocessor
 from models.final_model import UrbanSoundModel
@@ -41,24 +42,22 @@ wandb.init(
 )
 
 BASE_DIR = "urbansound8k"
-CSV_PATH = os.path.join(BASE_DIR, "UrbanSound8K.csv")
-AUDIO_DIR = os.path.join(BASE_DIR, "data")
 CHECKPOINT_DIR = "checkpoints"
+CSV_PATH = os.path.join(BASE_DIR, "UrbanSound8K.csv")
+AUDIO_DIR = os.path.join(BASE_DIR, "audio")
 
-# download dataset from huggingface if not already downloaded
-def download_dataset():
-  if not os.path.exists(BASE_DIR):
-    os.makedirs(BASE_DIR)
-    print(f"Created folder {BASE_DIR}...")
-  if not os.path.exists(CSV_PATH):
-    hf_hub_download(repo_id="danavery/urbansound8K", filename="UrbanSound8K.csv", cache_dir=BASE_DIR)
-    print(f"Downloaded UrbanSound8K.csv to {BASE_DIR}...")
-  if not os.path.exists(AUDIO_DIR):
-    for i in range(1, 16):
-      hf_hub_download(repo_id="danavery/urbansound8K", filename=f"data/train-000{i:02d}-of-00016-03506887d89adfc9.parquet", cache_dir=AUDIO_DIR)
-    print(f"Downloaded all audio files to {AUDIO_DIR}...")
-# download dataset
-download_dataset()
+# make sure folders exist
+os.makedirs(BASE_DIR, exist_ok=True)
+os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+# download dataset from soundata if not already downloaded
+if not os.path.exists(AUDIO_DIR):
+  print("UrbanSound8K audio folder not found. Downloading using soundata...")
+  dataset = soundata.initialize('urbansound8k')
+  dataset.download()
+  print("Download complete.")
+else:
+  print("UrbanSound8K audio already found locally. Skipping download.")
 
 # 10 fold cross validation
 all_fold_accuracies = []
@@ -88,6 +87,8 @@ for fold in range(1, 11):
   # training loop for each epoch
   model.train()
   wandb.watch(model, log='all')
+  
+  # training loop
   for epoch in range(NUM_EPOCHS):
     running_loss = 0.0
     all_predictions = []
@@ -134,7 +135,11 @@ for fold in range(1, 11):
   # save model checkpoint to wandb artifact
   model_save_path = os.path.join(CHECKPOINT_DIR, f"model_fold_{fold}_{timestamp}.pth")
   torch.save(model.state_dict(), model_save_path)
-  wandb.save(model_save_path)
+
+  # save model checkpoint to wandb artifact
+  artifact = wandb.Artifact(f'model_fold_{fold}_{timestamp}', type='model')
+  artifact.add_file(model_save_path)
+  wandb.log_artifact(artifact)
 
   # log confusion matrix
   conf_matrix = confusion_matrix(all_labels, all_predictions)
@@ -150,7 +155,7 @@ for fold in range(1, 11):
   wandb.log({f"Confusion Matrix for Fold {fold}": wandb.Image(fig)})
   plt.close(fig)
 
-# after all folds
+# final logs
 avg_accuracy = np.mean(all_fold_accuracies)
 print(f"\n----------------------------------")
 print(f"Average 10-Fold Cross-Validation Accuracy: {avg_accuracy:.4f}")
@@ -164,10 +169,5 @@ wandb.log({
   "10-Fold Cross-Validation Accuracy": fold_table, 
   "Average Accuracy": avg_accuracy
 })
-
-# save model checkpoint to wandb artifact
-artifact = wandb.Artifact(f'model_fold_{fold}_{timestamp}', type='model')
-artifact.add_file(model_save_path)
-wandb.log_artifact(artifact)
 
 wandb.finish()

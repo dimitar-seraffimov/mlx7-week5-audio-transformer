@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from encoder import TransformerEncoder
-from cnn_classifier import CNNClassifier
+from models.encoder import TransformerEncoder
+from models.cnn_classifier import CNNClassifier
 
 #
 #
