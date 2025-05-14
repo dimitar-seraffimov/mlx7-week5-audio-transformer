@@ -12,7 +12,7 @@ class EncoderBlock(nn.Module):
   def __init__(self, embedding_dim, hidden_dim, num_heads):
     super().__init__()
 
-    self.self_attention = nn.MultiheadAttention(embedding_dim=embedding_dim, num_heads=num_heads, batch_first=True)
+    self.self_attention = nn.MultiheadAttention(embed_dim=embedding_dim, num_heads=num_heads, batch_first=True)
     self.linear1 = nn.Linear(embedding_dim, hidden_dim)
     self.linear2 = nn.Linear(hidden_dim, embedding_dim)
 
@@ -23,7 +23,7 @@ class EncoderBlock(nn.Module):
 
   def forward(self, x):
     # self-attention
-    attention_output = self.self_attention(x, x, x)
+    attention_output, _ = self.self_attention(x, x, x)
     x = x + self.dropout(attention_output)
     x = self.norm1(x)
 
