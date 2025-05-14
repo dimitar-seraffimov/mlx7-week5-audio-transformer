@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix
 from tqdm import tqdm
 import wandb
+import json
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
@@ -30,6 +31,9 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 CHECKPOINT_DIR = "checkpoints"
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
+# load class_to_idx mapping
+with open('checkpoints/class_to_idx.json', 'r') as f:
+  class_to_idx = json.load(f)
 
 #
 #
@@ -47,7 +51,8 @@ def train_model(CSV_PATH, AUDIO_DIR):
     "num_epochs": NUM_EPOCHS,
     "learning_rate": LEARNING_RATE,
     "num_classes": NUM_CLASSES,
-    "device": DEVICE
+    "device": DEVICE,
+    "class_to_idx": class_to_idx
     }
   )
 
