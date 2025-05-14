@@ -15,8 +15,11 @@ def download_and_prepare_dataset(base_dir="urbansound8k"):
     metadata = []
     for clip_id in dataset.clip_ids:
         clip = dataset.clip(clip_id)
-        tags_list = clip.tags
-        class_label = tags_list[0]['value'] if tags_list else "unknown"
+
+        try:
+            class_label = clip.tags[0].value
+        except (IndexError, AttributeError, TypeError):
+            class_label = "unknown"
 
         metadata.append({
             "slice_file_name": os.path.basename(clip.audio_path),
