@@ -100,7 +100,7 @@ def train_model(CSV_PATH, AUDIO_DIR):
 
         running_loss += loss.item()
 
-        predictions = torch.argmax(dim=1)
+        predictions = torch.argmax(outputs, dim=1)
         all_predictions.extend(predictions.detach().cpu().numpy())
         all_labels.extend(labels.detach().cpu().numpy())
 
