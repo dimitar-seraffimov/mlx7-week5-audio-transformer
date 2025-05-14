@@ -15,11 +15,15 @@ def download_and_prepare_dataset(base_dir="urbansound8k"):
     metadata = []
     for clip_id in dataset.clip_ids:
         clip = dataset.clip(clip_id)
+        tags_list = clip.tags.to_list()
+        class_label = tags_list[0]['value'] if tags_list else "unknown"
+
         metadata.append({
             "slice_file_name": os.path.basename(clip.audio_path),
             "fold": clip.fold,
-            "class": clip.tags[0].value if clip.tags else "unknown"
+            "class": class_label
         })
+
 
     os.makedirs(base_dir, exist_ok=True)
     metadata_df = pd.DataFrame(metadata)
