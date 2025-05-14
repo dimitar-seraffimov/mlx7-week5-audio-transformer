@@ -1,9 +1,10 @@
 import os
+import json
 import pandas as pd
 import torchaudio
 from torch.utils.data import Dataset
 # imported here because we provide an instance of it when creating the dataset
-from preprocess_audio import AudioPreprocessor # never called here, only used in __getitem__
+from data.preprocess_audio import AudioPreprocessor # never called here, only used in __getitem__
 
 class UrbanSoundDataset(Dataset):
   def __init__(self, csv_path, audio_dir, fold, transform=None):
@@ -22,23 +23,44 @@ class UrbanSoundDataset(Dataset):
     # filter metadata for the selected fold
     self.metadata = self.metadata[self.metadata['fold'] == fold]
 
-  # return the number of samples in the dataset
+    # create or Load class_to_idx
+    self.class_to_idx = self._get_or_create_class_to_idx()
+
+  def _get_or_create_class_to_idx(self):
+    """Load class_to_idx from file if exists, otherwise build and save."""
+    mapping_path = os.path.join('checkpoints', 'class_to_idx.json')
+    os.makedirs(os.path.dirname(mapping_path), exist_ok=True)
+
+    if os.path.exists(mapping_path):
+      with open(mapping_path, 'r') as f:
+        class_to_idx = json.load(f)
+    else:
+      print("[INFO] Building class_to_idx mapping and saving...")
+      # create a sorted mapping
+      all_classes = sorted(self.metadata['class'].unique())
+      class_to_idx = {label: idx for idx, label in enumerate(all_classes)}
+      with open(mapping_path, 'w') as f:
+        json.dump(class_to_idx, f)
+    
+    return class_to_idx
+
   def __len__(self):
     return len(self.metadata)
   
-  # return patches and label for the sample at index idx
   def __getitem__(self, idx):
     sample = self.metadata.iloc[idx]
     file_path = os.path.join(self.audio_dir, f"fold{sample['fold']}", sample['slice_file_name'])
-    label = sample['classID']
 
     # load audio
     waveform, sample_rate = torchaudio.load(file_path)
     if sample_rate != self.transform.sample_rate:
-      waveform = torchaudio.functional.resample(waveform, sample_rate, self.transform.sample_rate)
+        waveform = torchaudio.functional.resample(waveform, sample_rate, self.transform.sample_rate)
     
     # apply preprocessing
     patches = self.transform(waveform)
 
-    # return patches and label
-    return patches, label
+    # encode label
+    label_name = sample['class']
+    label_idx = self.class_to_idx[label_name]
+
+    return patches, label_idx

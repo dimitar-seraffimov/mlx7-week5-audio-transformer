@@ -1,7 +1,7 @@
 notebook
 librosa
 matplotlib
-numpy
+numpy==1.26.4 # libraries jams and soundata are not updated for NumPy 2.0
 pandas
 scipy
 tqdm
@@ -9,3 +9,10 @@ datasets
 ipywidgets
 torch
 torchaudio
+wandb
+huggingface-hub
+seaborn
+matplotlib
+scikit-learn
+datetime
+soundata
