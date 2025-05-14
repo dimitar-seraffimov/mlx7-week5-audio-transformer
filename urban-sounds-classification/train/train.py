@@ -28,8 +28,17 @@ NUM_CLASSES = 10
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 timestamp = datetime.datetime.now().strftime('%Y_%m_%d__%H_%M_%S')
 
-WANDB_PROJECT = "mlx7-week5-sounds-classification"
-wandb.init(project=WANDB_PROJECT)
+wandb.init(
+  project='mlx7-week5-sounds-classification', 
+  name=f'week5-audio-classification-{timestamp}',
+  config={
+    "batch_size": BATCH_SIZE,
+    "num_epochs": NUM_EPOCHS,
+    "learning_rate": LEARNING_RATE,
+    "num_classes": NUM_CLASSES,
+    "device": DEVICE
+  }
+)
 
 BASE_DIR = "urbansound8k"
 CSV_PATH = os.path.join(BASE_DIR, "UrbanSound8K.csv")
@@ -78,6 +87,7 @@ for fold in range(1, 11):
 
   # training loop for each epoch
   model.train()
+  wandb.watch(model, log='all')
   for epoch in range(NUM_EPOCHS):
     running_loss = 0.0
     all_predictions = []
@@ -154,5 +164,10 @@ wandb.log({
   "10-Fold Cross-Validation Accuracy": fold_table, 
   "Average Accuracy": avg_accuracy
 })
+
+# save model checkpoint to wandb artifact
+artifact = wandb.Artifact(f'model_fold_{fold}_{timestamp}', type='model')
+artifact.add_file(model_save_path)
+wandb.log_artifact(artifact)
 
 wandb.finish()

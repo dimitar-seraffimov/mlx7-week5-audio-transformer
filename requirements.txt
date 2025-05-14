@@ -13,5 +13,5 @@ wandb
 huggingface-hub
 seaborn
 matplotlib
-sklearn
+scikit-learn
 datetime
