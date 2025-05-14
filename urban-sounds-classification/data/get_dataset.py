@@ -29,7 +29,7 @@ def download_and_prepare_dataset(base_dir="urbansound8k"):
         metadata.append({
             "slice_file_name": os.path.basename(clip.audio_path),
             "fold": clip.fold,
-            "class": clip.tags[0]['label']
+            "class": clip.tags.labels[0]
         })
 
 
