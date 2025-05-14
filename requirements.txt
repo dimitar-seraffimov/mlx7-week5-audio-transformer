@@ -9,3 +9,9 @@ datasets
 ipywidgets
 torch
 torchaudio
+wandb
+huggingface-hub
+seaborn
+matplotlib
+sklearn
+datetime
