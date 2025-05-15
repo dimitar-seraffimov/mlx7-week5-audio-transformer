@@ -1,0 +1,8 @@
+numpy
+librosa
+soundfile
+whisper
+torchaudio
+torch
+whisper
+tqdm

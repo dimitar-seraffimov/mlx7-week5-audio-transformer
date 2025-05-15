@@ -10,10 +10,10 @@ from models.cnn_classifier import CNNClassifier
 #
 
 class UrbanSoundModel(nn.Module):
-  def __init__(self, num_layers=6, embedding_dim=64, hidden_dim=128, num_heads=4, num_patches=16, num_classes=10):
+  def __init__(self, num_layers=6, embed_dim=64, hidden_dim=128, num_heads=4, num_patches=16, num_classes=10):
     super().__init__()
-    self.encoder = TransformerEncoder(num_layers, embedding_dim, hidden_dim, num_heads, num_patches)
-    self.classifier = CNNClassifier(embedding_dim, num_classes)
+    self.encoder = TransformerEncoder(num_layers, embed_dim, hidden_dim, num_heads, num_patches)
+    self.classifier = CNNClassifier(embed_dim, num_classes)
 
   def forward(self, x):
     x = self.encoder(x)

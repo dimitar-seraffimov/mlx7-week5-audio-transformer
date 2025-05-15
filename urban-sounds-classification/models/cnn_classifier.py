@@ -22,7 +22,7 @@ class CNNClassifier(nn.Module):
 
   def forward(self, x):
     # x shape: (batch_size, embedding_dim, n_patches)
-    x = self.permute(0, 2, 1) # (batch_size, n_patches, embedding_dim)
+    x = x.permute(0, 2, 1) # (batch_size, n_patches, embedding_dim)
     x = F.relu(self.conv_block1(x))
     x = self.pool(x).squeeze(-1) # (batch_size, 128)
     x = self.fc(x)

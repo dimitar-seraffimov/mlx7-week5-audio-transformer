@@ -20,12 +20,17 @@ class AudioPreprocessor:
   def __call__(self, wave_form):
     # compute mel-spectrogram
     spectrogram = self.mel_spectrogram(wave_form) # (channel, n_mels, time)
-    if spectrogram.shape[0] == 1:
-      spectrogram = spectrogram.mean(dim=0, keepdim=True) # convert to mono if stereo
-    
-    spectrogram = spectrogram.squeeze(0) # (n_mels, time)
+    if spectrogram.ndim == 3:
+      spectrogram = spectrogram.mean(dim=0) # convert to mono if stereo
     # normalize
-    spectrogram = (spectrogram - self.mean()) / (spectrogram.std() + 1e-6)
+    spectrogram = (spectrogram - spectrogram.mean()) / (spectrogram.std() + 1e-6)
+
+    # pad spectrogram if too short
+    min_total_width = self.num_patches * 44
+    if spectrogram.shape[1] < min_total_width:
+      pad_size = min_total_width - spectrogram.shape[1]
+      spectrogram = torch.nn.functional.pad(spectrogram, (0, pad_size))
+
     # patch into 16 segments
     patches = self._split_into_patches(spectrogram)
 
@@ -39,15 +44,24 @@ class AudioPreprocessor:
 
     for i in range(self.num_patches):
       start = i * patch_size
-      end = (i + 1) * patch_size if i < self.num_patches - 1 else time_steps
+      # for the last patch, take everything until the end
+      if i == self.num_patches - 1:
+        end = time_steps
+      else:
+        end = (i + 1) * patch_size
+      
       patch = spectrogram[:, start:end]
 
-      # if patches is shorter than patch_size, pad with zeros
+      # pad if necessary
       if patch.shape[1] < patch_size:
         pad_size = patch_size - patch.shape[1]
         patch = torch.nn.functional.pad(patch, (0, pad_size))
+      
+      # crop if necessary (very rare with this fix)
+      elif patch.shape[1] > patch_size:
+        patch = patch[:, :patch_size]
 
       patches.append(patch)
-  
+
     patches = torch.stack(patches) # (num_patches, n_mels, patch_length)
     return patches

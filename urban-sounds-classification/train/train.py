@@ -70,7 +70,7 @@ def train_model(CSV_PATH, AUDIO_DIR):
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # model
-    model = UrbanSoundModel(num_layers=6, embedding_dim=64, hidden_dim=128, num_heads=4, num_patches=16, num_classes=NUM_CLASSES)
+    model = UrbanSoundModel(num_layers=6, embed_dim=64, hidden_dim=128, num_heads=4, num_patches=16, num_classes=NUM_CLASSES)
     model.to(DEVICE)
 
     # loss function and optimizer
@@ -100,7 +100,7 @@ def train_model(CSV_PATH, AUDIO_DIR):
 
         running_loss += loss.item()
 
-        predictions = torch.argmax(dim=1)
+        predictions = torch.argmax(outputs, dim=1)
         all_predictions.extend(predictions.detach().cpu().numpy())
         all_labels.extend(labels.detach().cpu().numpy())
 
