@@ -1,1 +1,5 @@
 .venv
+*.wav
+*.m4a
+__pycache__
+*.pt

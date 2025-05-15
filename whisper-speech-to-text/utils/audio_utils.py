@@ -29,8 +29,24 @@ class AudioPreprocessor:
   
   # split audio into chunks of CHUNK_DURATION seconds
   def split_chunks(self, audio):
-    chunk_size = int(self.sample_rate * CHUNK_DURATION)
-    return [audio[i:i+chunk_size] for i in range(0, len(audio), chunk_size)]
+    chunk_size = int(self.sample_rate * self.chunk_duration)
+    chunks = []
+
+    for i in range(0, len(audio), chunk_size):
+      chunk = audio[i:i+chunk_size]
+
+      if len(chunk) < chunk_size:
+        # pad with zeros at the end if chunk is smaller than chunk_size
+        pad_width = chunk_size - len(chunk)
+        chunk = np.pad(chunk, (0, pad_width))
+      elif len(chunk) > chunk_size:
+        # trim chunk if it's longer than chunk_size, trim to match the chunk_size
+        chunk = chunk[:chunk_size]
+      
+      # append the chunk to the list of chunks
+      chunks.append(chunk)
+
+    return chunks
   
   # save audio to file
   def save_audio(self, audio, file_path):
