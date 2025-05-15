@@ -8,6 +8,8 @@ Implement a model to classify urban environmental sounds into predefined categor
 
 ### Tasks
 
+REWRITE!
+
     - stream from Hugging Face and explore UrbanSound8K
     - preprocess audio: load waveform, compute mel-spectrograms, normalize
     - feature encoding: split each spectrogram into three time patches and pass through encoder blocks
@@ -15,6 +17,8 @@ Implement a model to classify urban environmental sounds into predefined categor
     - training loop: integrate with PyTorch for batching, optimization, and evaluation.
 
 ### Expected Outcomes
+
+REWRITE!
 
     - Dataset class for loading audio
     - preprocess_audio function for feature extraction
