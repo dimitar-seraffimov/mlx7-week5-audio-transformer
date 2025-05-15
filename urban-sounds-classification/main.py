@@ -15,6 +15,8 @@ def main():
 
   # Step 3: evaluate the saved models across all folds
   print("[STEP 3] Starting evaluation...")
+  # run build_class_to_index.py to get the class_to_idx.json file if no new training
+  # on new training, CHANGE checkpoint path in evaluate.py - currently using best-saved in wandb
   CLASS_MAP_PATH = "checkpoints/class_to_idx.json"
   evaluate_all_folds(CSV_PATH, AUDIO_DIR, CLASS_MAP_PATH)
 
