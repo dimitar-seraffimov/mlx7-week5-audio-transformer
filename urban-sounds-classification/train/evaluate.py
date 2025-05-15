@@ -29,11 +29,11 @@ CHECKPOINT_DIR = "checkpoints"
 CLASS_MAP_PATH = os.path.join(CHECKPOINT_DIR, "class_to_idx.json")
 
 WANDB_PROJECT = "mlx7-week5-sounds-classification"
-WANDB_RUN_NAME = "week5-audio-classification-2025_05_14__16_05_56"
+WANDB_RUN_ID = "o413ibhm"
 
 # wandb API
 api = wandb.Api()
-run = api.run(f"mlx7-dimitar-projects/{WANDB_PROJECT}/{WANDB_RUN_NAME}")
+run = api.run(f"mlx7-dimitar-projects/{WANDB_PROJECT}/{WANDB_RUN_ID}")
 
 #
 #
