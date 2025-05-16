@@ -11,7 +11,7 @@ Demonstrate a live speech-to-text system that listens during the short presentat
 
 ### How it works? - simplified overview:
 
-    - recorded sample data = no more than 15 minutes of me speaking, I will probably split it in 30x30sec audio files
+    - recorded sample data = no more than 15 minutes of me speaking, I will probably split it in 30x30sec audio files  -> DONE, but didnt have time to complete the rest - I know what needs to be done though!
     - speaker recognition model based on these samples
     - stream live audio to the model:
         - a sliding window over time (audio segmentation)
