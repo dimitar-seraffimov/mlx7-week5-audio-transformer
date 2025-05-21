@@ -4,6 +4,8 @@ N_MELS = 64
 N_FFT = 1024
 HOP_LENGTH = 256
 CHUNK_DURATION = 0.25  # 1/4 second = 250ms
+TARGET_DURATION = 3 * 60 * 60  # 3 hours in seconds for the other dataset
+
 
 # whisper model config
 WHISPER_MODEL_NAME = "tiny"
